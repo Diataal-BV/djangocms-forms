@@ -2,14 +2,14 @@
 
 from __future__ import unicode_literals
 
+from cms.plugin_base import CMSPluginBase
+from cms.plugin_pool import plugin_pool
+
 from django import forms
 from django.contrib import admin
 from django.db import models
 from django.template.loader import select_template
 from django.utils.translation import ugettext_lazy as _
-
-from cms.plugin_base import CMSPluginBase
-from cms.plugin_pool import plugin_pool
 
 from .conf import settings
 from .forms import FormBuilder, FormDefinitionAdminForm, FormFieldInlineForm
@@ -31,8 +31,8 @@ class FormFieldInline(admin.StackedInline):
     def get_fieldsets(self, request, obj=None):
         fields = (
             ('label', 'field_type', 'required'),
-            'initial', 'placeholder_text', 'help_text', 
-            'choice_values', 'position', 
+            'initial', 'placeholder_text', 'help_text',
+            'choice_values', 'position',
         )
 
         if settings.DJANGOCMS_FORMS_ALLOW_CUSTOM_FIELD_NAME:
@@ -109,11 +109,14 @@ class FormPlugin(CMSPluginBase):
 
     def get_render_template(self, context, instance, placeholder):
         # returns the first template that exists, falling back to bundled template
-        return select_template([
+        templates = [
             instance.form_template,
             settings.DJANGOCMS_FORMS_DEFAULT_TEMPLATE,
             'djangocms_forms/form_template/default.html'
-        ])
+        ]
+        templates = list(filter(bool, templates))
+        return select_template(templates)
+
 
     def render(self, context, instance, placeholder):
         context = super(FormPlugin, self).render(context, instance, placeholder)
