@@ -59,14 +59,24 @@
         },
         renderReCaptcha: function() {
             var that = this;
-            $('.g-recaptcha').each(function() {
-                var widgetId = $(this).attr('id');
-                grecaptcha.render(widgetId, {
-                    sitekey: that.settings.reCaptchaSiteKey,
-                    size: that.settings.reCaptchaSize,
-                    theme: that.settings.reCaptchaTheme
-                });
-            });
+
+            var OverrideTimer = window.setInterval( function(){
+
+               if (typeof grecaptcha === 'undefined' || typeof grecaptcha.render === 'undefined') {
+                   return;
+               }
+
+               window.clearInterval(OverrideTimer);
+
+               $('.g-recaptcha').each(function() {
+                   var widgetId = $(this).attr('id');
+                   grecaptcha.render(widgetId, {
+                       sitekey: that.settings.reCaptchaSiteKey,
+                       size: that.settings.reCaptchaSize,
+                       theme: that.settings.reCaptchaTheme
+                   });
+               });
+            }, 500);
         },
         ajaxSuccess: function(response) {
             if (response.formIsValid) this.formValid(response);
