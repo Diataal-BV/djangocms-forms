@@ -333,7 +333,7 @@ class FormBuilder(forms.Form):
         user = request.user if request.user.is_authenticated else None
         FormSubmission.objects.create(
             plugin=self.form_definition.plugin_reference,
-            ip=get_client_ip(request),
+            ip=get_client_ip(request)[0],
             referrer=referrer,
             form_data=form_data,
             created_by=user)
